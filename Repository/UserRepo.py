@@ -39,8 +39,8 @@ class UserRepository:
         if res is None:
             return None
         else:
-            res.username = UserDto.username,
-            res.email = UserDto.email,
+            res.username = UserDto.username
+            res.email = UserDto.email
             res.password = UserDto.password     
             
 

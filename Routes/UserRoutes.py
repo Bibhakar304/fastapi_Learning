@@ -1,26 +1,45 @@
-from fastapi import FastAPI, Depends, status, HTTPException,APIRouter
+from fastapi import FastAPI, Depends, status, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from database import get_db
-from Schemas.schemas import UserCreate,UserResponse,UserUpdate
+from Models.model import User
+from Schemas.schemas import UserCreate, UserResponse, UserUpdate
 from Schemas.ConstantResponce import ApplicationResponce
 from Services.User_Services import User_Services
-from typing import List,Optional
+from typing import List, Optional
+from core.dependencies import get_current_client, get_current_user_id
 
-router  = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
+@router.get("/me", response_model=ApplicationResponce[UserResponse], status_code=status.HTTP_200_OK)
+def get_current_user_profile(
+    user_id: int = Depends(get_current_user_id),
+    user_services: User_Services = Depends()
+):
+    user = user_services.GetUserById(user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return ApplicationResponce(
+        StatusCode=200,
+        Message="User profile retrieved successfully",
+        Data=user
+    )
 
-@router.post("/users", response_model=ApplicationResponce[UserResponse], status_code=status.HTTP_201_CREATED )
-def create_user(user:UserCreate, User_Services:User_Services = Depends()):
+@router.post("/users", response_model=ApplicationResponce[UserResponse], status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, User_Services: User_Services = Depends()):
     res = User_Services.createUser(user)
     Application_Responce = ApplicationResponce(
-        Data = res,
-        StatusCode = 201,
-        Message = "Appication created with code 201"
+        Data=res,
+        StatusCode=201,
+        Message="Appication created with code 201"
     )
     return Application_Responce
 
+
 @router.get("/alluser",response_model = ApplicationResponce[List[UserResponse]],status_code = status.HTTP_200_OK)
-def get_allUser(User_Services : User_Services = Depends()):
+def get_allUser(User_Services : User_Services = Depends(), current_client=Depends(get_current_client)):
     res = User_Services.getAllUser()
     Application_Response = ApplicationResponce(
         StatusCode = 200,

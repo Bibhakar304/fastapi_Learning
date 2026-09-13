@@ -19,6 +19,10 @@ class User_Services:
     def GetUserById(self,userId:int):
         res = self.userRepo.GetUserById(userId)
         return res
+
+    def GetUserProfile(self, userId: int):
+        res = self.userRepo.GetUserById(userId)
+        return res
             
     def UpdateUserById(self,user:UserUpdate):
         res = self.userRepo.UpdateUserById(user)

@@ -6,4 +6,4 @@ T= TypeVar("T")
 class ApplicationResponce(BaseModel, Generic[T]):   
     StatusCode: int
     Message:str
-    Data: T
+    Data: T 

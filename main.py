@@ -4,15 +4,19 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from Routes.UserRoutes import router
+from Routes.UserRoutes import router as user_router
+from Routes.AuthRoutes import router as auth_router
+from Routes.AuthUserLogin import router as user_auth_router
 
 from database import get_db
 
 app = FastAPI(title="My API", description="This is a sample API", version="1.0.0"  )
 logger = logging.getLogger(__name__)
 
+app.include_router(auth_router)
+app.include_router(user_auth_router)
+app.include_router(user_router)
 
-app.include_router(router)
 
 @app.get("/")
 def get_root():
